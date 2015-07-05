@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Data.SQLite;
+using System.Data.Entity;
+using System.Data.Common;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QA_Helper
 {
@@ -644,6 +648,121 @@ namespace QA_Helper
             this.datePickerTo.Value = DateTime.Now;
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //сохранение шаблона
+            StreamWriter sr = new StreamWriter(@"test.txt");
+            string result_str = "";
+            foreach (FieldNode a in nodes)
+            {
+                result_str += a.type.ToString() + ";";
+                if (a.type == 0)
+                {
+                    result_str += a.name + ";";
+                    if (fd.FileName != "")
+                    {
+                        result_str += fd.FileName.ToString() + ";";
+                    }
+                    else
+                    {
+                        result_str += standartList.SelectedItem.ToString() + ";";
+                    }
+                }
+                if (a.type == 1)
+                {
+                    result_str += a.name + ";";
+                    result_str += a.from.ToString() + ";";
+                    result_str += a.to.ToString() + ";";
+                }
+                if(a.type == 2)
+                {
+                    result_str += a.name + ";";
+                    result_str += dateFormatCbox.SelectedItem.ToString() + ";";
+                    result_str += a.dfrom.ToString() + ";";
+                    result_str += a.dto.ToString() + ";";
+                }
+                if(a.type == 3)
+                {
+                    result_str += a.name.ToString();
+                    result_str += long.Parse(this.seqFromTxt.Text.Trim()) + ";";
+                    result_str += long.Parse(this.seqStepTxt.Text.Trim()) + ";";
+                }
+                if (a.type == 4)
+                {
+                    result_str += a.name + ";";
+                    if (fd.FileName != "")
+                        result_str += fd.FileName.ToString() + ";";
+                    else
+                        result_str += standartList.SelectedItem.ToString() + ";";
+                }
+                result_str += "_";
+                //sr.Write(result_str);
+                //sr.Write("_");
+            }
+            //sr.Write(result_str);
+            using (var db = new MyDBContext())
+            {
+                /*var item = db.Templetes.Create();
+                item.Name = "One";
+                item.Tmp = result_str;*/
+                db.Templetes.Add(new Templete { Name = "Test", Tmp = result_str });
+                db.SaveChanges();
+            }
+            var result_query = "";
+            using (var db = new MyDBContext())
+            {
+                foreach (var templete in db.Templetes)
+                {
+                    result_query = templete.Name + " " + templete.Tmp;
+                }
+            }
+            sr.Write(result_query);
+            sr.Close();
+        }
+        int kolVo = 0;
+        Point location = new Point(0, 0);
+        private void button2_Click(object sender, EventArgs e)
+        {
+            //обозреватель шаблонов
+            Form f2 = new Form();
+            using (var db = new MyDBContext())
+            {
+                Button[] bt = new Button[50];
+                foreach (var templete in db.Templetes)
+                {
+                    for (int i = 0; i < db.Templetes.Count(); i++)
+                    {
+                        bt[i] = new Button();
+                        bt[i].Name = "Button" + i;
+                        bt[i].Text = templete.Name;
+                        bt[i].Left = 10 + i * 50;
+                        bt[i].Top = 10 + i * 50;
+                        bt[i].Click += new EventHandler(BtClick);
+                        f2.Controls.Add(bt[i]);
+                    }
+                }
+            }
+            f2.Show();
+        }
+
+        private void BtClick(object sender, System.EventArgs e)
+        {
+            MessageBox.Show((sender as Button).Name);
+        }
+
+        public class Templete
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Tmp { get; set; }
+        }
+        public class MyDBContext : DbContext
+        {
+            public MyDBContext() : base("DBTemplete")
+            {
+            }
+            public DbSet<Templete> Templetes { get; set; }
+        }
 
     }
 }

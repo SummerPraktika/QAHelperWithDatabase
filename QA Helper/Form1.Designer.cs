@@ -69,6 +69,8 @@ namespace QA_Helper
             this.chooseButton = new System.Windows.Forms.Button();
             this.LeftPanel = new System.Windows.Forms.Panel();
             this.fd = new System.Windows.Forms.OpenFileDialog();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.statusStrip.SuspendLayout();
             this.controlPanel.SuspendLayout();
             this.welcomePanel.SuspendLayout();
@@ -495,7 +497,7 @@ namespace QA_Helper
             this.LeftPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.LeftPanel.Location = new System.Drawing.Point(8, 12);
             this.LeftPanel.Name = "LeftPanel";
-            this.LeftPanel.Size = new System.Drawing.Size(250, 366);
+            this.LeftPanel.Size = new System.Drawing.Size(250, 314);
             this.LeftPanel.TabIndex = 25;
             // 
             // fd
@@ -503,11 +505,33 @@ namespace QA_Helper
             this.fd.Filter = "TXT files|*.txt";
             this.fd.Title = "Выбрать файл";
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(8, 336);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(249, 23);
+            this.button1.TabIndex = 26;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(8, 359);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(249, 23);
+            this.button2.TabIndex = 27;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(662, 469);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.LeftPanel);
             this.Controls.Add(this.controlPanel);
             this.Controls.Add(this.statusStrip);
@@ -569,6 +593,8 @@ namespace QA_Helper
         private OpenFileDialog fd;
         private ComboBox standartList;
         private Label standartListLbl;
+        private Button button1;
+        private Button button2;
     }
 }
 
