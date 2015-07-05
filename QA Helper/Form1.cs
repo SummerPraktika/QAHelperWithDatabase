@@ -651,7 +651,7 @@ namespace QA_Helper
         private void button1_Click(object sender, EventArgs e)
         {
             //сохранение шаблона
-            StreamWriter sr = new StreamWriter(@"test.txt");
+            //StreamWriter sr = new StreamWriter(@"test.txt");
             string result_str = "";
             foreach (FieldNode a in nodes)
             {
@@ -696,28 +696,14 @@ namespace QA_Helper
                         result_str += standartList.SelectedItem.ToString() + ";";
                 }
                 result_str += "_";
-                //sr.Write(result_str);
-                //sr.Write("_");
+                MessageBox.Show("Шаблон сохранен!");
             }
-            //sr.Write(result_str);
             using (var db = new MyDBContext())
             {
-                /*var item = db.Templetes.Create();
-                item.Name = "One";
-                item.Tmp = result_str;*/
                 db.Templetes.Add(new Templete { Name = "Test", Tmp = result_str });
                 db.SaveChanges();
             }
-            var result_query = "";
-            using (var db = new MyDBContext())
-            {
-                foreach (var templete in db.Templetes)
-                {
-                    result_query = templete.Name + " " + templete.Tmp;
-                }
-            }
-            sr.Write(result_query);
-            sr.Close();
+
         }
         int kolVo = 0;
         Point location = new Point(0, 0);
@@ -733,7 +719,7 @@ namespace QA_Helper
                     for (int i = 0; i < db.Templetes.Count(); i++)
                     {
                         bt[i] = new Button();
-                        bt[i].Name = "Button" + i;
+                        bt[i].Name = templete.Name;
                         bt[i].Text = templete.Name;
                         bt[i].Left = 10 + i * 50;
                         bt[i].Top = 10 + i * 50;
@@ -747,7 +733,15 @@ namespace QA_Helper
 
         private void BtClick(object sender, System.EventArgs e)
         {
-            MessageBox.Show((sender as Button).Name);
+            string f = (sender as Button).Name.ToString();
+            using (var db = new MyDBContext())
+            {
+                var find = db.Templetes.Where(x => x.Name == f).FirstOrDefault();
+                if (find != null)
+                {
+                    MessageBox.Show(find.Id + " " + find.Name + " " + find.Tmp);
+                }
+            }
         }
 
         public class Templete
