@@ -696,14 +696,13 @@ namespace QA_Helper
                         result_str += standartList.SelectedItem.ToString() + ";";
                 }
                 result_str += "_";
-                MessageBox.Show("Шаблон сохранен!");
             }
             using (var db = new MyDBContext())
             {
-                db.Templetes.Add(new Templete { Name = "Test", Tmp = result_str });
+                db.Templetes.Add(new Templete { Name = "Test111", Tmp = result_str });
                 db.SaveChanges();
             }
-
+            MessageBox.Show("Шаблон сохранен!");
         }
         int kolVo = 0;
         Point location = new Point(0, 0);
@@ -711,21 +710,20 @@ namespace QA_Helper
         {
             //обозреватель шаблонов
             Form f2 = new Form();
+            int i = 0;
             using (var db = new MyDBContext())
             {
                 Button[] bt = new Button[50];
                 foreach (var templete in db.Templetes)
                 {
-                    for (int i = 0; i < db.Templetes.Count(); i++)
-                    {
                         bt[i] = new Button();
-                        bt[i].Name = templete.Name;
+                        bt[i].Name = templete.Id.ToString();
                         bt[i].Text = templete.Name;
                         bt[i].Left = 10 + i * 50;
                         bt[i].Top = 10 + i * 50;
                         bt[i].Click += new EventHandler(BtClick);
                         f2.Controls.Add(bt[i]);
-                    }
+                    i++;
                 }
             }
             f2.Show();
@@ -736,10 +734,13 @@ namespace QA_Helper
             string f = (sender as Button).Name.ToString();
             using (var db = new MyDBContext())
             {
-                var find = db.Templetes.Where(x => x.Name == f).FirstOrDefault();
+                var find = from templ in db.Templetes
+                           where templ.Id.ToString() == f
+                           select templ; 
                 if (find != null)
                 {
-                    MessageBox.Show(find.Id + " " + find.Name + " " + find.Tmp);
+                    foreach (var t in find)
+                        MessageBox.Show(t.Id + " " + t.Name + " " + t.Tmp + " : " + db.Templetes.Count());
                 }
             }
         }
