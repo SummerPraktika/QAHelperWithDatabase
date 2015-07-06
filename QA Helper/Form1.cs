@@ -676,7 +676,8 @@ namespace QA_Helper
                 if(a.type == 2)
                 {
                     result_str += a.name + ";";
-                    result_str += dateFormatCbox.SelectedItem.ToString() + ";";
+                    result_str += a.dateFormat + ";";
+                    //result_str += dateFormatCbox.SelectedItem.ToString() + ";";
                     result_str += a.dfrom.ToString() + ";";
                     result_str += a.dto.ToString() + ";";
                 }
@@ -803,7 +804,7 @@ namespace QA_Helper
         }
         public class MyDBContext : DbContext
         {
-            public MyDBContext() : base("DBTemplete111")
+            public MyDBContext() : base("DBTemplete1111")
             {
             }
             public DbSet<Templete> Templetes { get; set; }
