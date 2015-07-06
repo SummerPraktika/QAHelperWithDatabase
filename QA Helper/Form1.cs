@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Data.SQLite;
+//using System.Data.SQLite;
 using System.Data.Entity;
 using System.Data.Common;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -651,7 +651,6 @@ namespace QA_Helper
         private void button1_Click(object sender, EventArgs e)
         {
             //сохранение шаблона
-            //StreamWriter sr = new StreamWriter(@"test.txt");
             string result_str = "";
             foreach (FieldNode a in nodes)
             {
@@ -659,9 +658,9 @@ namespace QA_Helper
                 if (a.type == 0)
                 {
                     result_str += a.name + ";";
-                    if (fd.FileName != "")
+                    if (a.pathToFile != "")
                     {
-                        result_str += fd.FileName.ToString() + ";";
+                        result_str += a.pathToFile.ToString() + ";";
                     }
                     else
                     {
@@ -683,17 +682,17 @@ namespace QA_Helper
                 }
                 if(a.type == 3)
                 {
-                    result_str += a.name.ToString();
+                    result_str += a.name.ToString() + ";";
                     result_str += long.Parse(this.seqFromTxt.Text.Trim()) + ";";
                     result_str += long.Parse(this.seqStepTxt.Text.Trim()) + ";";
                 }
                 if (a.type == 4)
                 {
                     result_str += a.name + ";";
-                    if (fd.FileName != "")
-                        result_str += fd.FileName.ToString() + ";";
+                    if (a.pathToFile != "")
+                        result_str += a.pathToFile.ToString() + ";";
                     else
-                        result_str += standartList.SelectedItem.ToString() + ";";
+                        result_str += standartList.SelectedValue.ToString() + ";";
                 }
                 result_str += "_";
             }
@@ -731,6 +730,17 @@ namespace QA_Helper
 
         private void BtClick(object sender, System.EventArgs e)
         {
+            nodes.Clear();
+            foreach(Button b in FieldBtn)
+                LeftPanel.Controls.Remove(b);
+            foreach (Button b in ParametresBtn)
+                LeftPanel.Controls.Remove(b);
+            foreach (Button b in DeleteBtn)
+                LeftPanel.Controls.Remove(b);
+            FieldBtn.Clear();
+            ParametresBtn.Clear();
+            DeleteBtn.Clear();
+            tBtn = 0;
             string f = (sender as Button).Name.ToString();
             using (var db = new MyDBContext())
             {
@@ -740,7 +750,47 @@ namespace QA_Helper
                 if (find != null)
                 {
                     foreach (var t in find)
-                        MessageBox.Show(t.Id + " " + t.Name + " " + t.Tmp + " : " + db.Templetes.Count());
+                    {
+                        string [] record = t.Tmp.Split(new Char [] { '_' });
+                        foreach(var r in record)
+                        {
+                            FieldNode fn = null;
+                            string[] pole = r.Split(new Char[] { ';' });
+                            if(pole[0] == "0")
+                            {
+                                fn = new FieldNode(Int32.Parse(pole[0]), pole[1], pole[2].ToString());
+                            }
+                            if (pole[0] == "1")
+                            {
+                                fn = new FieldNode(Int32.Parse(pole[0]), pole[1], long.Parse(pole[2]), long.Parse(pole[3]));
+                            }
+                            if(pole[0] == "2")
+                            {
+                                DateTime from = new DateTime();
+                                DateTime to = new DateTime();
+                                DateTime.TryParse(pole[3],out from);
+                                DateTime.TryParse(pole[4],out to);
+                                fn = new FieldNode(Int32.Parse(pole[0]), pole[1], pole[2], from, to);
+                            }
+                            if(pole[0] == "3")
+                            {
+                                fn = new FieldNode(pole[1], Int32.Parse(pole[0]), long.Parse(pole[2]), long.Parse(pole[3]));
+                            }
+                            if(pole[0] == "4")
+                            {
+                                fn = new FieldNode(Int32.Parse(pole[0]), pole[1], pole[2]);
+                            }
+                            if(fn != null)
+                            {
+                                nodes.Add(fn);
+                                nameTxt.Text = fn.name;
+                                NewButton();
+                            }
+                        }
+                        //foreach(var n in nodes)
+                          //  MessageBox.Show(n.type.ToString() + " : " + n.name.ToString());
+                        //MessageBox.Show(t.Tmp);
+                    }
                 }
             }
         }
@@ -753,7 +803,7 @@ namespace QA_Helper
         }
         public class MyDBContext : DbContext
         {
-            public MyDBContext() : base("DBTemplete")
+            public MyDBContext() : base("DBTemplete111")
             {
             }
             public DbSet<Templete> Templetes { get; set; }
